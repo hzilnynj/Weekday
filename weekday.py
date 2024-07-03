@@ -19,7 +19,8 @@ def count_weekdays(start_date, end_date):
     if start_date > end_date:
         return 0
 
-    total_days = (end_date - start_date).days + 1
+    # Convert to epoch then divide by 86400 seconds in a day
+    total_days = int((end_date.timestamp() - start_date.timestamp()) / 86400) + 1
     full_weeks = total_days // 7
     remaining_days = total_days % 7
 
