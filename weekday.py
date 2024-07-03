@@ -3,7 +3,7 @@ import unittest
 
 def is_leap_year(year):
     return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
-
+    
 def days_in_month(month, year):
     days_map = {
         1: 31, 3: 31, 5: 31, 7: 31, 8: 31, 10: 31, 12: 31,
@@ -11,52 +11,34 @@ def days_in_month(month, year):
         2: 29 if is_leap_year(year) else 28
     }
     return days_map[month]
+    
+def count_leap_years_up_to(year, month):
+    """ Return the number of leap years up to the given year based on the month """
+    if month > 2:
+        leap_years = year // 4 - year // 100 + year // 400
+    else:
+        leap_years = (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400
+    
+    return leap_years
 
 def get_days_between_dates(start_date, end_date):
     """Count the number of days between two dates."""
-    
+
     year1, month1, day1 = start_date.year, start_date.month, start_date.day
     year2, month2, day2 = end_date.year, end_date.month, end_date.day
-
-    days = 0
-
     
-    if year1 == year2:
-        
-        # When dates are in the same year
-        if month1 == month2:
-            days += day2 - day1
-        else:
-            days += days_in_month(month1, year1) - day1
-            month1 += 1
-            while month1 < month2:
-                days += days_in_month(month1, year1)
-                month1 += 1
-            days += day2
-            
-    else:
-        # Calculate number of days within start and end year
-        days += days_in_month(month1, year1) - day1
-        month1 += 1
-        while month1 <= 12:
-            days += days_in_month(month1, year1)
-            month1 += 1
-        month2 -= 1
-        while month2 >= 1:
-            days += days_in_month(month2, year2)
-            month2 -= 1
-        days += day2
-        
-        # Calculate number of years
-        year1 += 1
-        while year1 < year2:
-            if is_leap_year(year1):
-                days += 366
-            else:
-                days += 365
-            year1 += 1
+    # Calculate the number of days before start_date and end_date
+    days_before_date1 = year1 * 365 + day1 + count_leap_years_up_to(year1, month1)
 
-    return days
+    for m in range(1, month1):
+        days_before_date1 += days_in_month(m, year1)
+
+    days_before_date2 = year2 * 365 + day2 + count_leap_years_up_to(year2, month2)
+    
+    for m in range(1, month2):
+        days_before_date2 += days_in_month(m, year2)
+        
+    return days_before_date2 - days_before_date1
 
 def count_weekdays(start_date, end_date):
     """Count number of weekdays between start_date and end_date (inclusive)."""
