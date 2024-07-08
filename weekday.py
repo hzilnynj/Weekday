@@ -8,7 +8,7 @@ def days_in_month(month, year):
     days_map = {
         1: 31, 3: 31, 5: 31, 7: 31, 8: 31, 10: 31, 12: 31,
         4: 30, 6: 30, 9: 30, 11: 30,
-        2: 29 if is_leap_year(year) else 28
+        2: 28
     }
     return days_map[month]
     
@@ -61,13 +61,14 @@ def count_weekdays(start_date, end_date):
     total_days = get_days_between_dates(start_date, end_date) + 1
     
     full_weeks = total_days // 7
-    remaining_days = total_days % 7
+    remaining_days = end_date.weekday() - start_date.weekday() + 1
 
-    # Calculate weekdays in the remaining days
-    start_day_of_week = start_date.weekday()
-    remaining_weekdays = remaining_days if start_day_of_week + remaining_days <= 4 else max(0, 5 - start_day_of_week)
+    # Adjust remaining_days if end_date is earlier in the week than start_date
+    if remaining_days != 0 and end_date.weekday() < start_date.weekday():
+        remaining_days = 5 + remaining_days
 
-    return full_weeks * 5 + remaining_weekdays
+    return full_weeks * 5 + remaining_days
+
 
 class TestWeekdays(unittest.TestCase):
 
@@ -100,6 +101,18 @@ class TestWeekdays(unittest.TestCase):
         start_date = datetime(2000, 1, 1)  
         end_date = datetime(2024, 6, 30)     
         self.assertEqual(count_weekdays(start_date, end_date), 6390)
+
+    def test_leap_year_span(self):
+        start_date = datetime(2020, 1, 1)  # Leap year start
+        end_date = datetime(2024, 12, 31)  # Leap year end
+        self.assertEqual(count_weekdays(start_date, end_date), 1305)  # Includes 4 leap years (2020, 2024)
+        
+    def test_weekend_span(self):
+        start_date = datetime(2024, 6, 28)  # Friday
+        end_date = datetime(2024, 7, 1)     # Monday
+        self.assertEqual(count_weekdays(start_date, end_date), 2)  
+
+
 
 if __name__ == '__main__':
     unittest.main()
