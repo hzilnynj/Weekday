@@ -8,7 +8,7 @@ def days_in_month(month, year):
     days_map = {
         1: 31, 3: 31, 5: 31, 7: 31, 8: 31, 10: 31, 12: 31,
         4: 30, 6: 30, 9: 30, 11: 30,
-        2: 29 if is_leap_year(year) else 28
+        2: 28
     }
     return days_map[month]
     
@@ -112,6 +112,15 @@ class TestWeekdays(unittest.TestCase):
         end_date = datetime(2024, 7, 1)     # Monday
         self.assertEqual(count_weekdays(start_date, end_date), 2)  
 
+    def test_non_leap_to_leap_year_days_between(self):
+        start_date = datetime(2019, 1, 1)  
+        end_date = datetime(2020, 12, 31)   
+        self.assertEqual(get_days_between_dates(start_date, end_date), 730)
+
+    def test_non_leap_to_leap_year_weekdays(self):
+        start_date = datetime(2019, 1, 1) 
+        end_date = datetime(2020, 12, 31)  
+        self.assertEqual(count_weekdays(start_date, end_date), 523)
 
 
 if __name__ == '__main__':
